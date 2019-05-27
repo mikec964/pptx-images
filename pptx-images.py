@@ -1,33 +1,71 @@
 #!/usr/bin/env python3
 
+import os
 from pptx import Presentation
 from pptx.enum.shapes import MSO_SHAPE_TYPE
 
-def iter_slide_shapes(prs):
-    for slide in prs.slides:
-        print(f'slides={len(prs.slides)}')
-        for shape in slide.shapes:
-            print(f'...shapes={len(slide.shapes)}, {shape.shape_type}')
-            if shape.shape_type == MSO_SHAPE_TYPE.PICTURE:
-                yield shape
 
-def get_images(filename):
-    i = 0
-    for picture in iter_slide_shapes(Presentation(filename)):
-        i += 1
-        image = picture.image
-        # ---get image "file" contents---
-        image_bytes = image.blob
-        # ---make up a name for the file, e.g. 'image.jpg'---
-        image_filename = 'image ' + str(i) + '.' + image.ext
-        with open(image_filename, 'wb') as f:
-            f.write(image_bytes)
+def save_pic(picture, suffix):
+    '''Save picture to disk'''
+
+    image = picture.image
+    image_bytes = image.blob
+    image_filename = 'image ' + suffix + '.' + image.ext
+    print(f'saving {suffix}')
+    with open(image_filename, 'wb') as f:
+        f.write(image_bytes)
+
+
+def pics_in_shapes(shape_list):
+    '''Return pics in list of shapes
+
+    Shapes can be picture, group, text_box, other.
+
+    '''
+    pic_list = []
+    for shape in shape_list.shapes:
+        # add pics to the list of pics
+        # add groups to the list of groups
+        # call the group-walker
+        if shape == MSO_SHAPE_TYPE.PICTURE:
+            pic_list.append(shape)
+        elif shape == MSO_SHAPE_TYPE.GROUP:
+            pic_list.extend(pics_in_shapes(shape))
+    return pic_list
+
+
+def pics_in_pres(filename):
+    '''Extract pics from presentation to disk'''
+
+    pres = Presentation(filename)
+    nSlides = len(pres.slides)
+    slideN = 0
+    for slide in pres.slides:
+        slideN += 1
+        nShapes = len(slide.shapes)
+        shapeN = 0
+        for shape in slide.shapes:
+            shapeN += 1
+            print(f'slide {slideN} of {nSlides}, shape {shapeN} of {nShapes} is {shape.shape_type}')
+            suffix = str(slideN) + '-' + str(shapeN)
+            if shape.shape_type == MSO_SHAPE_TYPE.PICTURE:
+                save_pic(shape, suffix)
+            elif shape.shape_type == MSO_SHAPE_TYPE.GROUP:
+                for shp in shape.shapes:
+                    print(shp.shape_type)
+                    if shp.shape_type == MSO_SHAPE_TYPE.PICTURE:
+                        save_pic(shp, suffix)
+
+
 
 def main():
     filename = 'ARG162-Flat.pptx'
-    prs = Presentation(filename)
-    get_images(filename)
+    out_dir = 'pics'
+    pics_in_pres(filename)
+    # prs = Presentation(filename)
+    # get_images(filename)
     return
+
 
 if __name__ == "__main__":
     main()
