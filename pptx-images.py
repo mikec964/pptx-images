@@ -5,14 +5,14 @@ from pptx import Presentation
 from pptx.enum.shapes import MSO_SHAPE_TYPE
 
 
-def save_pic(picture, suffix):
+def save_pic(picture, suffix, out_dir=''):
     '''Save picture to disk'''
 
     image = picture.image
     image_bytes = image.blob
     image_filename = 'image ' + suffix + '.' + image.ext
     print(f'saving {suffix}')
-    with open(image_filename, 'wb') as f:
+    with open(os.path.join(out_dir,image_filename), 'wb') as f:
         f.write(image_bytes)
 
 
@@ -34,8 +34,8 @@ def pics_in_shapes(shape_list):
     return pic_list
 
 
-def pics_in_pres(filename):
-    '''Extract pics from presentation to disk'''
+def pics_in_pres(filename, out_dir):
+    '''Extract pics from pptx presentation to disk'''
 
     pres = Presentation(filename)
     nSlides = len(pres.slides)
@@ -49,21 +49,19 @@ def pics_in_pres(filename):
             print(f'slide {slideN} of {nSlides}, shape {shapeN} of {nShapes} is {shape.shape_type}')
             suffix = str(slideN) + '-' + str(shapeN)
             if shape.shape_type == MSO_SHAPE_TYPE.PICTURE:
-                save_pic(shape, suffix)
+                save_pic(shape, suffix, out_dir)
             elif shape.shape_type == MSO_SHAPE_TYPE.GROUP:
                 for shp in shape.shapes:
                     print(shp.shape_type)
                     if shp.shape_type == MSO_SHAPE_TYPE.PICTURE:
-                        save_pic(shp, suffix)
+                        save_pic(shp, suffix, out_dir)
 
 
 
 def main():
-    filename = 'ARG162-Flat.pptx'
-    out_dir = 'pics'
-    pics_in_pres(filename)
-    # prs = Presentation(filename)
-    # get_images(filename)
+    filename = 'ARG032-Flat.pptx'
+    out_dir = 'arg032-flat'
+    pics_in_pres(filename, out_dir)
     return
 
 
