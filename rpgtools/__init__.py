@@ -11,5 +11,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt()
 login_manager = LoginManager(app)
+login_manager.login_view = 'login' # class in routes.py
+login_manager.login_message_category = 'info' # bootstrap css class
 
 from rpgtools import routes
