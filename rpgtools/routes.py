@@ -1,7 +1,8 @@
 from flask import render_template, url_for, flash, redirect
-from rpgtools import app
+from rpgtools import app, db, bcrypt
 from rpgtools.forms import RegistrationForm, LoginForm
 from rpgtools.models import User, Post
+
 
 @app.route("/")
 @app.route("/home")
@@ -18,7 +19,11 @@ def about():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        flash(f'Account created for {form.username.data}.', 'success')
+        hashed_pw = bcrypt.generate_password_hash(form.password.data).decode('utf-8)')
+        user = User(username=form.username.data, email=form.email.data, password=hashed_pw)
+        db.session.add(user)
+        db.session.commit()
+        flash(f'Account created for {form.username.data}. You should login now.', 'success')
         return redirect(url_for('home'))
     return render_template('register.html', title='Register', form=form)
 
