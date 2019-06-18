@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import Tkinter as tk
 import os
 from pptx import Presentation
 from pptx.enum.shapes import MSO_SHAPE_TYPE
@@ -59,9 +60,18 @@ def pics_in_pres(filename, out_dir):
 
 
 def main():
-    filename = 'ARG032-Flat.pptx'
-    out_dir = 'arg032-flat'
-    pics_in_pres(filename, out_dir)
+    # file_paths = sys.argv[1:]   # ignore name of this app
+    # for f in file_paths:
+    #     print(f)
+
+    # filename = 'ARG049-Horizontal.pptx'
+    # out_dir = 'arg049-flat'
+    # pics_in_pres(filename, out_dir)
+
+    root = tk.Tk()
+    w = tk.Label(root, text="Hello world")
+    w.pack()
+    root.mainloop()
     return
 
 
