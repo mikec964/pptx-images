@@ -1,8 +1,10 @@
 from flask import render_template, url_for, flash, redirect, request
 from flask_login import login_user, current_user, logout_user, login_required
+import os
 from rpgtools import app, db, bcrypt
 from rpgtools.forms import RegistrationForm, LoginForm, UpdateAccountForm
 from rpgtools.models import User, Post
+import secrets
 
 
 @app.route("/")
@@ -54,11 +56,23 @@ def logout():
     return redirect(url_for('home'))
 
 
+def save_picture(form_picture):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    f_name = random_hex + f_ext
+    f_path = os.path.join(app.root_path, 'static/profile_pics', f_name)
+    form_picture.save(f_path)
+    return f_name
+
+
 @app.route("/account", methods=['GET', 'POST'])
 @login_required
 def account():
     form = UpdateAccountForm()
     if form.validate_on_submit():
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            current_user.image_file = picture_file
         current_user.username = form.username.data
         current_user.email = form.email.data
         db.session.commit()
