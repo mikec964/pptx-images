@@ -1,5 +1,6 @@
 from flask import render_template, url_for, flash, redirect, request
 from flask_login import login_user, current_user, logout_user, login_required
+from PIL import Image
 import os
 from rpgtools import app, db, bcrypt
 from rpgtools.forms import RegistrationForm, LoginForm, UpdateAccountForm
@@ -61,7 +62,10 @@ def save_picture(form_picture):
     _, f_ext = os.path.splitext(form_picture.filename)
     f_name = random_hex + f_ext
     f_path = os.path.join(app.root_path, 'static/profile_pics', f_name)
-    form_picture.save(f_path)
+    output_size = (256, 256)
+    i = Image.open(form_picture)
+    i.thumbnail(output_size)
+    i.save(f_path)
     return f_name
 
 

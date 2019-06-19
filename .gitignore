@@ -3,3 +3,4 @@
 *.sublime-workspace
 *.py[cod]
 .keys
+static/profile_pics/
