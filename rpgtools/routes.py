@@ -3,7 +3,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 from PIL import Image
 import os
 from rpgtools import app, db, bcrypt
-from rpgtools.forms import RegistrationForm, LoginForm, UpdateAccountForm
+from rpgtools.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
 from rpgtools.models import User, Post
 import secrets
 
@@ -11,7 +11,8 @@ import secrets
 @app.route("/")
 @app.route("/home")
 def home():
-    return render_template('home.html')
+    posts = Post.query.all()
+    return render_template('home.html', posts=posts)
 
 
 @app.route("/about")
@@ -88,4 +89,17 @@ def account():
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     return render_template('account.html', title='Account', 
                             image_file=image_file, form=form)
+
+
+@app.route("/post/new", methods=['GET', 'POST'])
+@login_required
+def new_post():
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(title=form.title.data, content=form.content.data, author=current_user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your post has been accepted.', 'success')
+        return redirect(url_for('home'))
+    return render_template('new_post.html', title='New Post', form=form)
 

@@ -1,11 +1,16 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Extract Images from PowerPoint</h1>
-    <p>Paper minis (also called flats) can come in many different forms, including PDF pages with the images scaled and arranged for printing. But there are many reasons you may want to extract the images. </p>
-    <ul>
-        <li>Create your own printout with a subset of the flats.</li>
-        <li>Increase the size of the flats so they work with plastic minis.</li> 
-        <li>Use the art in circle tokens.</li>
-        <li>Resize the flats for use with a VTT.</li>
-    </ul>
+    {% for post in posts %}
+        <article class="media content-section">
+          <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ post.author.username }}</a>
+              <small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</small>
+            </div>
+            <h2><a class="article-title" href="#">{{ post.title }}</a></h2>
+            <p class="article-content">{{ post.content }}</p>
+          </div>
+        </article>
+    {% endfor %}
 {% endblock content %}
