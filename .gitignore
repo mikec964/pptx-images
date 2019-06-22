@@ -2,5 +2,5 @@
 *.sublime-project
 *.sublime-workspace
 *.py[cod]
-.keys
+.env
 rpgtools/static/profile_pics/
