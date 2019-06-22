@@ -1,9 +1,11 @@
 from flask import render_template, url_for, flash, redirect, request, abort
 from flask_login import login_user, current_user, logout_user, login_required
+from flask_mail import Message
 from PIL import Image
 import os
-from rpgtools import app, db, bcrypt
-from rpgtools.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
+from rpgtools import app, db, bcrypt, mail
+from rpgtools.forms import (RegistrationForm, LoginForm, UpdateAccountForm, 
+                            PostForm, RequestResetForm, GrantResetForm)
 from rpgtools.models import User, Post
 import secrets
 
@@ -155,5 +157,50 @@ def delete_post(post_id):
     db.session.commit()
     flash('Your post has been deleted.', 'success')
     return redirect(url_for('home'))
+
+
+def send_reset_email(user):
+    token = user.get_reset_token()
+    msg = Message('Password Reset Request',
+                    sender='noreply@example.com',
+                    recipients=[user.email])
+    msg.body = f'''To reset your password, visit the following link:
+{url_for('grant_reset', token=token, _external=True)}
+
+If you did not make this request, simply ignore this email.
+'''
+    mail.send(msg)
+
+
+@app.route("/reset_password", methods=['GET', 'POST'])
+def request_reset():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_reset_email(user)
+        flash('An email has been sent with instructions to reset your password.', 'info')
+        return redirect(url_for('login'))
+    return render_template('reset_request.html', title='Request Password Reset', form=form)
+
+
+@app.route("/reset_password/<token>", methods=['GET', 'POST'])
+def grant_reset(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    user = User.verify_reset_token(token)
+    if user is None:
+        flash('That token has expired or is invalid.', 'warning')
+        return redirect(url_for('request_reset'))
+    form = GrantResetForm()
+    if form.validate_on_submit():
+        hashed_pw = bcrypt.generate_password_hash(form.password.data).decode('utf-8)')
+        user.password = hashed_pw
+        db.session.commit()
+        flash('Your password has been updated. You can login now.', 'success')
+        return redirect(url_for('login'))
+    return render_template('reset_grant.html', title='Reset Password', form=form)
+
 
 
