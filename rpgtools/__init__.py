@@ -24,11 +24,13 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
     mail.init_app(app)
 
+    from rpgtools.errors.handlers import errors
+    app.register_blueprint(errors)
     from rpgtools.main.routes import main 
-    from rpgtools.posts.routes import posts
-    from rpgtools.users.routes import users
     app.register_blueprint(main)
+    from rpgtools.posts.routes import posts
     app.register_blueprint(posts)
+    from rpgtools.users.routes import users
     app.register_blueprint(users)
 
     return app
