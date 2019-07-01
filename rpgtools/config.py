@@ -1,4 +1,4 @@
-import ruamel_yaml as yaml
+import ruamel.yaml as yaml
 
 class Config:
     with open("keys.yaml", 'r') as config_f:
