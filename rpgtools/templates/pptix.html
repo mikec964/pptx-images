@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST" action="" enctype="multipart/form-data"> <!-- enctype for file field -->
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Extract Images from PowerPoint</legend>
+                <p><a href="https://www.drivethrurpg.com/browse/pub/667/Arion-Games/subcategory/1684/Arion-Games">Arion Games</a> provides paper minis for use on battle mats in 
+                    two forms, PDF and PowerPoint (PPTX).</p>
+                <p>The problem? The images in the PDF
+                    are scaled to print about 25mm tall, too small compared to
+                    32mm plastic minis. You can't just print the PDF with 25% 
+                    zoom because the minis
+                    at the edge of the page will get clipped and they all get 
+                    slightly blurrier.</p>
+                <p>One solution is to use the paper mini images in the PowerPoint
+                    files. You can copy and paste these to create your own sheets
+                at whatever scale you'd like.</p>
+                <p>This extracts all of the images so you can scale them automatically,
+                and upload them to your VTT.</p>
+
+                <div class="form-group">
+                    {{ form.pptx.label() }}
+                    {{ form.pptx(class="form-control-file") }}
+                    {% if form.pptx.errors %}
+                        <!-- not in div.invalid-feedback, so use span.text-danger -->
+                        {% for error in form.pptx.errors %}
+                            <span class="text-danger">{{ error }}</span></br>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+    </div>
+{% endblock content %}
