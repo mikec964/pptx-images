@@ -6,7 +6,7 @@ from wtforms.validators import DataRequired
 
 class UploadPPTXForm(FlaskForm):
     pptx = FileField('Powerpoint Presentation',
-                            validators=[DataRequired(), FileAllowed(['ppt', 'pptx'])])
+                            validators=[DataRequired(), FileAllowed(['pptx'])])
     submit = SubmitField('Upload')
 
 
