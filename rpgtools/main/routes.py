@@ -1,7 +1,9 @@
-from flask import render_template, url_for, flash, redirect, request, Blueprint
+from flask import (Blueprint, current_app, flash, redirect, render_template,
+                     request, url_for)
+import os
+from ..pptimgx.pptimgx import Pptimgx
 from rpgtools.models import Post
 from rpgtools.main.forms import UploadPPTXForm
-from ..pptimgx.pptimgx import Pptimgx
 from rpgtools.users.utils import save_picture, send_reset_email
 
 main = Blueprint('main', __name__)
@@ -27,9 +29,8 @@ def pptix():
     if form.validate_on_submit():
         if form.pptx.data:
             f_name = form.pptx.data.filename
-            # pres1 = Pptimgx.Presentation(form.picture.data)
-            # picture_file = save_file(form.picture.data)
-            # current_user.image_file = picture_file
+            f_path = os.path.join(current_app.root_path, 'static/pptx')
+            form.pptx.data.save(os.path.join(f_path, f_name))
             flash(f'Your file {f_name} has been accepted.', 'success')
         return redirect(url_for('main.home'))
     return render_template('pptix.html', title='Powerpoint Image Extractor',
