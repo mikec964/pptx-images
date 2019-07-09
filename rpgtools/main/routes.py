@@ -1,6 +1,8 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint
 from rpgtools.models import Post
 from rpgtools.main.forms import UploadPPTXForm
+from ..pptimgx.pptimgx import Pptimgx
+from rpgtools.users.utils import save_picture, send_reset_email
 
 main = Blueprint('main', __name__)
 
@@ -23,7 +25,12 @@ def about():
 def pptix():
     form = UploadPPTXForm()
     if form.validate_on_submit():
-        flash('Your file has been accepted.', 'success')
+        if form.pptx.data:
+            f_name = form.pptx.data.filename
+            # pres1 = Pptimgx.Presentation(form.picture.data)
+            # picture_file = save_file(form.picture.data)
+            # current_user.image_file = picture_file
+            flash(f'Your file {f_name} has been accepted.', 'success')
         return redirect(url_for('main.home'))
     return render_template('pptix.html', title='Powerpoint Image Extractor',
                             form=form)
