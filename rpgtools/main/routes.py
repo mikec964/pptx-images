@@ -47,8 +47,14 @@ def pptix():
             # zip and return to user
             zip_name = f_base + '.zip'
             shutil.make_archive(pic_dir, 'zip', pic_dir)
+            zip_url = 'static/pptx/' + zip_name
             flash(f'Your file {original_f_name} has been accepted.', 'success')
-        return redirect(url_for('main.home'))
+        return redirect(url_for('main.download', filename=zip_name))
     return render_template('pptix.html', title='Powerpoint Image Extractor',
                             form=form)
+
+@main.route("/download/<string:filename>")
+def download(filename):
+    return render_template('download.html', filename=filename)
+
 

@@ -2,11 +2,9 @@
 *.sublime-project
 *.sublime-workspace
 *.py[cod]
-pptx-flatout/pptx-in/
-pptx-flatout/pptx-out flats/
-pptimgx/pptx-in/
-pptimgx/pptx-out flats/
+testdata/
 rpgtools/static/profile_pics/
+rpgtools/static/pptx
 *keys.yaml
 *keys.yml
 
