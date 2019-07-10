@@ -3,9 +3,11 @@ from flask import (Blueprint, current_app, flash, redirect, render_template,
 import os
 from ..pptimgx.pptimgx import Pptimgx
 import secrets
+import tempfile
 from rpgtools.models import Post
 from rpgtools.main.forms import UploadPPTXForm
 from rpgtools.users.utils import save_picture, send_reset_email
+import shutil
 
 main = Blueprint('main', __name__)
 
@@ -42,6 +44,9 @@ def pptix():
             os.mkdir(pic_dir)
             for p in range(pres1.nPics):
                 pres1.save(p, path=pic_dir)   # 'image 1.png'
+            # zip and return to user
+            zip_name = f_base + '.zip'
+            shutil.make_archive(pic_dir, 'zip', pic_dir)
             flash(f'Your file {original_f_name} has been accepted.', 'success')
         return redirect(url_for('main.home'))
     return render_template('pptix.html', title='Powerpoint Image Extractor',
